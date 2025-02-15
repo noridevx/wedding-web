@@ -13,7 +13,7 @@
         <a data-pin-do="embedBoard" data-pin-board-width="300" data-pin-scale-height="240" data-pin-scale-width="80" href="https://www.pinterest.com/elenacg19/vestidos-invitados/"></a>
         <h3 class="font-dancing mt-5">Tiendas donde comprar</h3>
         <div class="d-flex flex-wrap ga-3 mt-3 justify-center">
-            <a href="http://api-shein.shein.com/h5/sharejump/appjump?link=lSKGFdVez2P_9&localcountry=ES" target="_blank">
+            <a href="http://api-shein.shein.com/h5/sharejump/appjump?link=lceycvMsnCb_9&localcountry=ES" target="_blank">
                 <v-btn>
                     Shein
                 </v-btn>
