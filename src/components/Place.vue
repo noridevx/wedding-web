@@ -1,7 +1,7 @@
 <template>
     <v-container class="text-center" style="max-width: 900px;">
-        <h1 class="font-dancing ">Lugar Boda</h1>
-        <p class="mb-5">Masía els carasols</p>
+        <h1 class="font-dancing ">Lugar</h1>
+        <p class="mb-5">Masía els carasols, el sábado 08 de noviembre de 2025 a las 18:30h</p>
         <iframe 
             width="100%" 
             height="400px"

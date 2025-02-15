@@ -13,6 +13,7 @@
     "@mdi/font": "7.4.47",
     "roboto-fontface": "*",
     "vue": "^3.4.31",
+    "vue-gallery": "^2.0.5",
     "vue3-carousel": "^0.13.0",
     "vuetify": "^3.6.14"
   },

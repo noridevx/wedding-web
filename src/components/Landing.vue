@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white landing-background text-center">
+    <div class="bg-white landing-background text-center d-none d-md-block">
         <div class="position-relative" style="z-index: 1;">
             <v-container>
                 <div class="pt-10 font-dancing">
@@ -19,13 +19,18 @@
             ></v-img>
         </div>
     </div>
+    <div class="bg-white position-relative text-center d-md-none">
+        <v-img
+            src="@/assets/pictures/landing-1.jpg"
+            class="ma-auto"
+        ></v-img>
+    </div>
 </template>
 <script setup>
 </script>
 <style lang="scss">
 .landing-background {
     height: 100vh;
-    font-size: 1.5rem;
     position: relative;
 }
 </style>
