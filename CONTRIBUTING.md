@@ -99,6 +99,20 @@ const images = ref(
 
 - En `v-img`, usar `#placeholder` con `v-progress-circular` para mejorar la carga percibida.
 
+### Subida de fotos (página estilo app)
+
+- La página `src/pages/app.vue` implementa una galería con subida a Supabase Storage.
+- Configuración requerida en `.env` (variables prefijadas con `VITE_`):
+
+```
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+VITE_SUPABASE_BUCKET=wedding-photos
+VITE_SUPABASE_FOLDER=uploads
+```
+
+- Cliente en `src/lib/supabase.js`. Si las variables no están configuradas, la subida queda deshabilitada y la galería se muestra vacía.
+
 ## UX, responsive y patrones reutilizables
 
 - Utilidades de Vuetify (`d-none d-md-block`, grid, `v-container`, `v-row`, `v-col`).

@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@mdi/font": "7.4.47",
+    "@supabase/supabase-js": "^2.44.0",
     "roboto-fontface": "*",
     "vue": "^3.4.31",
     "vue-gallery": "^2.0.5",
