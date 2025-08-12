@@ -1,5 +1,9 @@
 <template>
-  <v-dialog v-model="showModal" max-width="800px" fullscreen>
+  <v-dialog
+    v-model="showModal"
+    max-width="800px"
+    fullscreen
+  >
     <v-card class="photo-detail-modal">
       <!-- Header simplificado -->
       <v-card-title class="d-flex align-center justify-end pa-4">
@@ -37,8 +41,15 @@
               :loading="imageLoading"
             >
               <template #placeholder>
-                <v-row class="fill-height ma-0" align="center" justify="center">
-                  <v-progress-circular indeterminate color="grey-lighten-4" />
+                <v-row
+                  class="fill-height ma-0"
+                  align="center"
+                  justify="center"
+                >
+                  <v-progress-circular
+                    indeterminate
+                    color="grey-lighten-4"
+                  />
                 </v-row>
               </template>
             </v-img>
@@ -47,13 +58,25 @@
         
         <!-- Comentario -->
         <div class="comment-section pa-4">
-          <div v-if="currentPhoto?.comment" class="comment-content">
-            <h4 class="text-subtitle-1 mb-2">Comentario:</h4>
-            <p class="text-body-2">{{ currentPhoto.comment }}</p>
+          <div
+            v-if="currentPhoto?.comment"
+            class="comment-content"
+          >
+            <h4 class="text-subtitle-1 mb-2">
+              Comentario:
+            </h4>
+            <p class="text-body-2">
+              {{ currentPhoto.comment }}
+            </p>
           </div>
           
-          <div v-else class="no-comment">
-            <p class="text-caption text-grey">Sin comentario</p>
+          <div
+            v-else
+            class="no-comment"
+          >
+            <p class="text-caption text-grey">
+              Sin comentario
+            </p>
           </div>
         </div>
       </v-card-text>

@@ -1,11 +1,24 @@
 <template>
   <section class="gallery-grid">
-    <div v-if="photos.length === 0" class="empty-state">
-      <v-icon size="48" color="grey-lighten-1">mdi-image-multiple</v-icon>
+    <div
+      v-if="photos.length === 0"
+      class="empty-state"
+    >
+      <v-icon
+        size="48"
+        color="grey-lighten-1"
+      >
+        mdi-image-multiple
+      </v-icon>
       <p>No hay fotos subidas aún</p>
-      <p class="text-caption">Desliza hacia abajo para actualizar</p>
+      <p class="text-caption">
+        Desliza hacia abajo para actualizar
+      </p>
     </div>
-    <v-row v-else dense>
+    <v-row
+      v-else
+      dense
+    >
       <v-col
         v-for="(photo, index) in photos"
         :key="photo.id"
@@ -13,7 +26,10 @@
         sm="4"
         md="3"
       >
-        <v-card class="photo-card" elevation="2">
+        <v-card
+          class="photo-card"
+          elevation="2"
+        >
           <v-img
             :src="photo.url"
             aspect-ratio="1"
@@ -22,15 +38,27 @@
             @click="showPhotoDetail(index)"
           >
             <template #placeholder>
-              <v-row class="fill-height ma-0" align="center" justify="center">
-                <v-progress-circular indeterminate color="grey-lighten-4" />
+              <v-row
+                class="fill-height ma-0"
+                align="center"
+                justify="center"
+              >
+                <v-progress-circular
+                  indeterminate
+                  color="grey-lighten-4"
+                />
               </v-row>
             </template>
           </v-img>
           
           <!-- Comentario (si existe) -->
-          <v-card-text v-if="photo.comment" class="photo-comment pa-2">
-            <p class="text-caption text-truncate">{{ photo.comment }}</p>
+          <v-card-text
+            v-if="photo.comment"
+            class="photo-comment pa-2"
+          >
+            <p class="text-caption text-truncate">
+              {{ photo.comment }}
+            </p>
           </v-card-text>
         </v-card>
       </v-col>

@@ -54,11 +54,13 @@ onMounted(() => {
   min-height: 100vh;
   background: #0f0f10; /* distinto al sitio principal */
   color: #fff;
-  overflow: hidden; // Prevenir scroll del body
+  position: relative; // Necesario para el v-fab
+  overflow: hidden; // Restaurar para evitar scroll del body
 }
 
 .app-content {
   padding: 8px 12px 24px;
+  overflow: hidden; // Contener el scroll dentro del área de contenido
   
   // Mejoras para dispositivos móviles
   @media (max-width: 768px) {

@@ -1,17 +1,18 @@
 <template>
-  <div 
+  <v-sheet
     ref="containerRef" 
     class="pull-to-refresh-container"
     :class="{ 'refreshing': isRefreshing }"
+    elevation="0"
   >
     <slot />
-  </div>
+  </v-sheet>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 
-const props = defineProps({
+defineProps({
   isRefreshing: {
     type: Boolean,
     default: false
@@ -31,7 +32,7 @@ const PULL_THRESHOLD = 80
 
 // Pull to refresh handlers
 function handleTouchStart(e) {
-  if (containerRef.value?.scrollTop === 0) {
+  if (containerRef.value?.$el?.scrollTop === 0) {
     startY = e.touches[0].clientY
     isDragging = true
   }
@@ -47,11 +48,11 @@ function handleTouchMove(e) {
     e.preventDefault()
     
     // Aplicar transformación visual
-    if (containerRef.value) {
+    if (containerRef.value?.$el) {
       const scale = 1 + (pullDistance / 1000)
       const translateY = pullDistance * 0.3
-      containerRef.value.style.transform = `translateY(${translateY}px) scale(${scale})`
-      containerRef.value.style.transition = 'none'
+      containerRef.value.$el.style.transform = `translateY(${translateY}px) scale(${scale})`
+      containerRef.value.$el.style.transition = 'none'
     }
   }
 }
@@ -61,9 +62,9 @@ function handleTouchEnd() {
   
   isDragging = false
   
-  if (containerRef.value) {
-    containerRef.value.style.transition = 'transform 0.3s ease-out'
-    containerRef.value.style.transform = 'translateY(0px) scale(1)'
+  if (containerRef.value?.$el) {
+    containerRef.value.$el.style.transition = 'transform 0.3s ease-out'
+    containerRef.value.$el.style.transform = 'translateY(0px) scale(1)'
   }
   
   if (pullDistance > PULL_THRESHOLD) {
@@ -75,7 +76,7 @@ function handleTouchEnd() {
 
 // Mouse events para desktop (opcional)
 function handleMouseDown(e) {
-  if (containerRef.value?.scrollTop === 0) {
+  if (containerRef.value?.$el?.scrollTop === 0) {
     startY = e.clientY
     isDragging = true
   }
@@ -87,11 +88,11 @@ function handleMouseMove(e) {
   currentY = e.clientY
   pullDistance = Math.max(0, currentY - startY)
   
-  if (pullDistance > 0 && containerRef.value) {
+  if (pullDistance > 0 && containerRef.value?.$el) {
     const scale = 1 + (pullDistance / 1000)
     const translateY = pullDistance * 0.3
-    containerRef.value.style.transform = `translateY(${translateY}px) scale(${scale})`
-    containerRef.value.style.transition = 'none'
+    containerRef.value.$el.style.transform = `translateY(${translateY}px) scale(${scale})`
+    containerRef.value.$el.style.transition = 'none'
   }
 }
 
@@ -100,9 +101,9 @@ function handleMouseUp() {
   
   isDragging = false
   
-  if (containerRef.value) {
-    containerRef.value.style.transition = 'transform 0.3s ease-out'
-    containerRef.value.style.transform = 'translateY(0px) scale(1)'
+  if (containerRef.value?.$el) {
+    containerRef.value.$el.style.transition = 'transform 0.3s ease-out'
+    containerRef.value.$el.style.transform = 'translateY(0px) scale(1)'
   }
   
   if (pullDistance > PULL_THRESHOLD) {
@@ -114,30 +115,30 @@ function handleMouseUp() {
 
 onMounted(() => {
   // Agregar event listeners para pull to refresh
-  if (containerRef.value) {
-    containerRef.value.addEventListener('touchstart', handleTouchStart, { passive: false })
-    containerRef.value.addEventListener('touchmove', handleTouchMove, { passive: false })
-    containerRef.value.addEventListener('touchend', handleTouchEnd)
+  if (containerRef.value?.$el) {
+    containerRef.value.$el.addEventListener('touchstart', handleTouchStart, { passive: false })
+    containerRef.value.$el.addEventListener('touchmove', handleTouchMove, { passive: false })
+    containerRef.value.$el.addEventListener('touchend', handleTouchEnd)
     
     // Mouse events para desktop
-    containerRef.value.addEventListener('mousedown', handleMouseDown)
-    containerRef.value.addEventListener('mousemove', handleMouseMove)
-    containerRef.value.addEventListener('mouseup', handleMouseUp)
-    containerRef.value.addEventListener('mouseleave', handleMouseUp)
+    containerRef.value.$el.addEventListener('mousedown', handleMouseDown)
+    containerRef.value.$el.addEventListener('mousemove', handleMouseMove)
+    containerRef.value.$el.addEventListener('mouseup', handleMouseUp)
+    containerRef.value.$el.addEventListener('mouseleave', handleMouseUp)
   }
 })
 
 onUnmounted(() => {
   // Limpiar event listeners
-  if (containerRef.value) {
-    containerRef.value.removeEventListener('touchstart', handleTouchStart)
-    containerRef.value.removeEventListener('touchmove', handleTouchMove)
-    containerRef.value.removeEventListener('touchend', handleTouchEnd)
+  if (containerRef.value?.$el) {
+    containerRef.value.$el.removeEventListener('touchstart', handleTouchStart)
+    containerRef.value.$el.removeEventListener('touchmove', handleTouchMove)
+    containerRef.value.$el.removeEventListener('touchend', handleTouchEnd)
     
-    containerRef.value.removeEventListener('mousedown', handleMouseDown)
-    containerRef.value.removeEventListener('mousemove', handleMouseMove)
-    containerRef.value.removeEventListener('mouseup', handleMouseUp)
-    containerRef.value.removeEventListener('mouseleave', handleMouseUp)
+    containerRef.value.$el.removeEventListener('mousedown', handleMouseDown)
+    containerRef.value.$el.removeEventListener('mousemove', handleMouseMove)
+    containerRef.value.$el.removeEventListener('mouseup', handleMouseUp)
+    containerRef.value.$el.removeEventListener('mouseleave', handleMouseUp)
   }
 })
 </script>

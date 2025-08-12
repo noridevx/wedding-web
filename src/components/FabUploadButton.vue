@@ -1,115 +1,129 @@
 <template>
-  <div class="fab-container">
-    <!-- FAB Button -->
-    <v-btn
-      fab
-      large
-      color="primary"
-      class="fab-button"
-      @click="showModal = true"
-    >
-      <v-icon>mdi-plus</v-icon>
-    </v-btn>
+  <!-- FAB Button -->
+  <v-btn
+    icon="mdi-plus"
+    color="primary"
+    size="x-large"
+    class="fab-button"
+    @click="showModal = true"
+  />
 
-    <!-- Modal para subir fotos -->
-    <v-dialog
-      v-model="showModal"
-      max-width="500px"
-      persistent
-    >
-      <v-card>
-        <v-card-title class="d-flex align-center justify-space-between">
-          <span>Subir Foto</span>
-          <v-btn
-            icon="mdi-close"
-            variant="text"
-            size="small"
-            @click="closeModal"
+  <!-- Modal para subir fotos -->
+  <v-dialog
+    v-model="showModal"
+    max-width="500px"
+    persistent
+  >
+    <v-card>
+      <v-card-title class="d-flex align-center justify-space-between">
+        <span>Subir Foto</span>
+        <v-btn
+          icon="mdi-close"
+          variant="text"
+          size="small"
+          @click="closeModal"
+        />
+      </v-card-title>
+
+      <v-card-text>
+        <v-form
+          ref="form"
+          @submit.prevent="handleUpload"
+        >
+          <!-- Selector de archivo -->
+          <v-file-input
+            v-model="selectedFile"
+            accept="image/*"
+            prepend-icon="mdi-image"
+            label="Seleccionar foto"
+            :rules="fileRules"
+            :error-messages="fileError"
+            @change="validateFile"
           />
-        </v-card-title>
 
-        <v-card-text>
-          <v-form ref="form" @submit.prevent="handleUpload">
-            <!-- Selector de archivo -->
-            <v-file-input
-              v-model="selectedFile"
-              accept="image/*"
-              prepend-icon="mdi-image"
-              label="Seleccionar foto"
-              :rules="fileRules"
-              :error-messages="fileError"
-              @change="validateFile"
+          <!-- Vista previa de la imagen -->
+          <div
+            v-if="imagePreview"
+            class="image-preview-container"
+          >
+            <v-img
+              :src="imagePreview"
+              aspect-ratio="1"
+              class="rounded"
+              cover
+              max-height="200"
             />
+          </div>
 
-            <!-- Vista previa de la imagen -->
-            <div v-if="imagePreview" class="image-preview-container">
-              <v-img
-                :src="imagePreview"
-                aspect-ratio="1"
-                class="rounded"
-                cover
-                max-height="200"
-              />
-            </div>
-
-            <!-- Campo de comentario -->
-            <v-textarea
-              v-model="comment"
-              label="Comentario (opcional)"
-              placeholder="Añade un comentario a tu foto..."
-              rows="3"
-              auto-grow
-              variant="outlined"
-              class="mt-4"
-            />
-
-            <!-- Información del archivo -->
-            <div v-if="selectedFile" class="file-info mt-3">
-              <v-chip size="small" color="info" variant="outlined">
-                {{ selectedFile.name }}
-              </v-chip>
-              <v-chip size="small" color="success" variant="outlined" class="ml-2">
-                {{ formatFileSize(selectedFile.size) }}
-              </v-chip>
-            </div>
-          </v-form>
-        </v-card-text>
-
-        <v-card-actions class="pa-4">
-          <v-spacer />
-          <v-btn
+          <!-- Campo de comentario -->
+          <v-textarea
+            v-model="comment"
+            label="Comentario (opcional)"
+            placeholder="Añade un comentario a tu foto..."
+            rows="3"
+            auto-grow
             variant="outlined"
-            @click="closeModal"
-            :disabled="isUploading"
-          >
-            Cancelar
-          </v-btn>
-          <v-btn
-            color="primary"
-            :loading="isUploading"
-            :disabled="!selectedFile || isUploading"
-            @click="handleUpload"
-          >
-            {{ isUploading ? 'Subiendo...' : 'Subir Foto' }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+            class="mt-4"
+          />
 
-    <!-- Snackbar para notificaciones -->
-    <v-snackbar
-      v-model="showSnackbar"
-      :color="snackbarColor"
-      :timeout="3000"
-    >
-      {{ snackbarMessage }}
-    </v-snackbar>
-  </div>
+          <!-- Información del archivo -->
+          <div
+            v-if="selectedFile"
+            class="file-info mt-3"
+          >
+            <v-chip
+              size="small"
+              color="info"
+              variant="outlined"
+            >
+              {{ selectedFile.name }}
+            </v-chip>
+            <v-chip
+              size="small"
+              color="success"
+              variant="outlined"
+              class="ml-2"
+            >
+              {{ formatFileSize(selectedFile.size) }}
+            </v-chip>
+          </div>
+        </v-form>
+      </v-card-text>
+
+      <v-card-actions class="pa-4">
+        <v-spacer />
+        <v-btn
+          variant="outlined"
+          :disabled="isUploading"
+          @click="closeModal"
+        >
+          Cancelar
+        </v-btn>
+        <v-btn
+          color="primary"
+          :loading="isUploading"
+          :disabled="!selectedFile || isUploading"
+          @click="handleUpload"
+        >
+          {{ isUploading ? 'Subiendo...' : 'Subir Foto' }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <!-- Snackbar para notificaciones -->
+  <v-snackbar
+    v-model="showSnackbar"
+    :color="snackbarColor"
+    :timeout="3000"
+  >
+    {{ snackbarMessage }}
+  </v-snackbar>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
-import { supabase, isSupabaseConfigured, SUPABASE_BUCKET, SUPABASE_FOLDER } from '@/lib/supabase'
+import { supabase, SUPABASE_BUCKET, SUPABASE_FOLDER } from '@/lib/supabase'
 
 const emit = defineEmits(['upload-success', 'upload-error'])
 
@@ -122,7 +136,7 @@ const snackbarMessage = ref('')
 const snackbarColor = ref('success')
 const fileError = ref('')
 
-const canUpload = isSupabaseConfigured()
+
 
 const fileRules = [
   value => {
@@ -244,16 +258,12 @@ function closeModal() {
 </script>
 
 <style scoped lang="scss">
-.fab-container {
-  position: relative;
-}
-
 .fab-button {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  z-index: 9999 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
 }
 
 .image-preview-container {
@@ -275,8 +285,8 @@ function closeModal() {
 // Responsive para móviles
 @media (max-width: 768px) {
   .fab-button {
-    bottom: 16px;
-    right: 16px;
+    bottom: 16px !important;
+    right: 16px !important;
   }
 }
 </style>
