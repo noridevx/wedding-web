@@ -123,18 +123,18 @@
           Cancelar
         </v-btn>
         <v-btn
-          :color="currentChallenge ? 'success' : 'primary'"
+          :color="currentChallenge ? 'warning' : 'primary'"
           variant="tonal"
           :loading="isUploading"
           :disabled="!selectedFile || isUploading"
           @click="handleUpload"
         >
-          <v-icon
-            v-if="currentChallenge"
-            start
-          >
-            mdi-trophy-check
-          </v-icon>
+          <template #prepend>
+            <v-icon
+              v-if="currentChallenge"
+              icon="mdi-trophy"
+            />
+          </template>
           {{ isUploading ? (currentChallenge ? 'Completando reto...' : 'Subiendo...') : (currentChallenge ? 'Completar Reto' : 'Subir Foto') }}
         </v-btn>
       </v-card-actions>
