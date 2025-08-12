@@ -28,28 +28,44 @@
       >
         <v-card
           class="photo-card"
+          :class="{ 'challenge-photo': photo.challenge }"
           elevation="2"
         >
-          <v-img
-            :src="photo.url"
-            aspect-ratio="1"
-            class="photo-image"
-            cover
-            @click="showPhotoDetail(index)"
-          >
-            <template #placeholder>
-              <v-row
-                class="fill-height ma-0"
-                align="center"
-                justify="center"
+          <div class="photo-container">
+            <v-img
+              :src="photo.url"
+              aspect-ratio="1"
+              class="photo-image"
+              cover
+              @click="showPhotoDetail(index)"
+            >
+              <template #placeholder>
+                <v-row
+                  class="fill-height ma-0"
+                  align="center"
+                  justify="center"
+                >
+                  <v-progress-circular
+                    indeterminate
+                    color="grey-lighten-4"
+                  />
+                </v-row>
+              </template>
+            </v-img>
+            
+            <!-- Badge de reto -->
+            <div
+              v-if="photo.challenge"
+              class="challenge-badge"
+            >
+              <v-icon
+                size="16"
+                color="white"
               >
-                <v-progress-circular
-                  indeterminate
-                  color="grey-lighten-4"
-                />
-              </v-row>
-            </template>
-          </v-img>
+                mdi-trophy
+              </v-icon>
+            </div>
+          </div>
           
           <!-- Comentario (si existe) -->
           <v-card-text
@@ -116,6 +132,35 @@ function showPhotoDetail(index) {
       p {
         margin: 0;
         line-height: 1.4;
+      }
+    }
+    
+    // Estilos para fotos de retos
+    &.challenge-photo {
+      border: 2px solid #FFC107;
+      box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+      
+      &:hover {
+        box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4) !important;
+      }
+    }
+    
+    .photo-container {
+      position: relative;
+      
+      .challenge-badge {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: linear-gradient(135deg, #FFC107, #FF9800);
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        z-index: 2;
       }
     }
   }

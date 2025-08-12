@@ -1,6 +1,9 @@
 <template>
   <div class="app-page">
     <AppHeader :is-refreshing="isRefreshing" />
+
+    <!-- Botón de reto -->
+    <ChallengeButton />
     
     <main class="app-content">
       <PhotoGallery :photos="photos" />
@@ -19,13 +22,10 @@ import { onMounted } from 'vue'
 import AppHeader from '@/components/AppHeader.vue'
 import PhotoGallery from '@/components/PhotoGallery.vue'
 import FabUploadButton from '@/components/FabUploadButton.vue'
+import ChallengeButton from '@/components/ChallengeButton.vue'
 import { usePhotoGallery } from '@/composables/usePhotoGallery'
 
-const { photos, isRefreshing, listPhotos, refresh } = usePhotoGallery()
-
-function handleRefresh() {
-  refresh()
-}
+const { photos, isRefreshing, listPhotos } = usePhotoGallery()
 
 function handleUploadSuccess() {
   // Refrescar la galería después de una subida exitosa

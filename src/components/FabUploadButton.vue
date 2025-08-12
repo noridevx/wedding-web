@@ -191,7 +191,7 @@ async function handleUpload() {
     console.log('Uploading:', filepath, 'Size:', selectedFile.value.size, 'Type:', selectedFile.value.type)
 
     // Subir archivo a Supabase Storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from(SUPABASE_BUCKET)
       .upload(filepath, selectedFile.value, {
         upsert: false,

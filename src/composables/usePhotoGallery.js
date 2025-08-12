@@ -13,10 +13,17 @@ export function usePhotoGallery() {
     }
     
     try {
-      // Obtener fotos desde la tabla 'photos' en lugar del storage directamente
+      // Obtener fotos desde la tabla 'photos' con información de retos
       const { data, error } = await supabase
         .from('photos')
-        .select('*')
+        .select(`
+          *,
+          challenges!inner(
+            id,
+            description,
+            is_completed
+          )
+        `)
         .order('uploaded_at', { ascending: false })
         .limit(1000)
       
@@ -34,7 +41,12 @@ export function usePhotoGallery() {
           comment: item.comment,
           fileName: item.file_name,
           fileSize: item.file_size,
-          uploadedAt: item.uploaded_at
+          uploadedAt: item.uploaded_at,
+          challenge: item.challenge_id ? {
+            id: item.challenges?.id,
+            description: item.challenges?.description,
+            isCompleted: item.challenges?.is_completed
+          } : null
         }))
         
     } catch (error) {

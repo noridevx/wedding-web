@@ -56,6 +56,29 @@
           </div>
         </div>
         
+        <!-- Información del reto (si aplica) -->
+        <div
+          v-if="currentPhoto?.challenge"
+          class="challenge-section pa-4"
+        >
+          <div class="challenge-content">
+            <div class="challenge-header">
+              <v-icon
+                color="warning"
+                class="mr-2"
+              >
+                mdi-trophy
+              </v-icon>
+              <h4 class="text-h6 font-dancing">
+                Reto Completado
+              </h4>
+            </div>
+            <p class="text-body-1 challenge-description">
+              {{ currentPhoto.challenge.description }}
+            </p>
+          </div>
+        </div>
+        
         <!-- Comentario -->
         <div class="comment-section pa-4">
           <div
@@ -309,6 +332,35 @@ onUnmounted(() => {
   border-radius: 8px;
   user-select: none;
   pointer-events: none;
+}
+
+.challenge-section {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1));
+  border-top: 1px solid rgba(255, 193, 7, 0.2);
+  
+  .challenge-content {
+    padding: 16px;
+    border-radius: 8px;
+    
+    .challenge-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      
+      h4 {
+        color: #FFC107;
+        margin: 0;
+        font-weight: 600;
+      }
+    }
+    
+    .challenge-description {
+      margin: 0;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.9);
+      font-style: italic;
+    }
+  }
 }
 
 .comment-section {
