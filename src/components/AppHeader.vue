@@ -4,31 +4,14 @@
     elevation="0"
     class="app-header"
   >
-    <v-container class="d-flex align-center justify-space-between">
-      <h2 class="font-dancing mb-0">
-        Boda · Fotos
-      </h2>
-      <div class="d-flex align-center">
-        <v-icon 
-          v-if="isRefreshing" 
-          size="small" 
-          class="rotating mr-1"
-          color="blue-lighten-2"
-        >
-          mdi-refresh
-        </v-icon>
-        <span 
-          v-if="isRefreshing" 
-          class="text-caption text-blue-lighten-2"
-        >
-          Actualizando...
-        </span>
-      </div>
-    </v-container>
+    <h2 class="font-dancing text-center ma-auto">
+      Elena & Sergio
+    </h2>
   </v-app-bar>
 </template>
 
 <script setup>
+
 defineProps({
   isRefreshing: {
     type: Boolean,
@@ -38,6 +21,17 @@ defineProps({
 </script>
 
 <style scoped lang="scss">
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap');
+.font-dancing {
+    font-family: "Dancing Script", serif;
+    font-optical-sizing: auto;
+    h1 {
+        font-size: 5rem;
+    }
+    h3 {
+        font-size: 2rem;
+    }
+}
 .app-header {
   backdrop-filter: blur(6px);
   z-index: 2;

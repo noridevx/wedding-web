@@ -161,7 +161,7 @@ function showPhotoDetail(index) {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
     padding: 0 4px;
     
     .filter-btn {

@@ -12,7 +12,7 @@
   <!-- Modal para subir fotos -->
   <v-dialog
     v-model="showModal"
-    max-width="600px"
+    fullscreen
     persistent
   >
     <v-card class="upload-modal-card">
@@ -63,7 +63,6 @@
             <p class="text-body-1 mb-1">
               {{ currentChallenge.description }}
             </p>
-            
           </div>
 
           <v-form
@@ -109,28 +108,6 @@
               hide-details="auto"
               class="mt-4"
             />
-
-            <!-- Información del archivo -->
-            <div
-              v-if="selectedFile"
-              class="file-info mt-3"
-            >
-              <v-chip
-                size="small"
-                color="info"
-                variant="outlined"
-              >
-                {{ selectedFile.name }}
-              </v-chip>
-              <v-chip
-                size="small"
-                color="success"
-                variant="outlined"
-                class="ml-2"
-              >
-                {{ formatFileSize(selectedFile.size) }}
-              </v-chip>
-            </div>
           </v-form>
         </v-card-text>
       </div>
@@ -215,7 +192,7 @@ const fileRules = [
   value => {
     if (!value) return 'Selecciona una imagen'
     if (!value.type.startsWith('image/')) return 'El archivo debe ser una imagen'
-    if (value.size > 10 * 1024 * 1024) return 'El archivo no puede ser mayor a 10MB'
+    if (!value.size || value.size > 50 * 1024 * 1024) return 'El archivo no puede ser mayor a 50MB'
     return true
   }
 ]
@@ -248,9 +225,15 @@ function validateFile() {
   fileError.value = ''
   if (!selectedFile.value) return
 
-  const validation = fileRules[0](selectedFile.value)
-  if (validation !== true) {
-    fileError.value = validation
+  try {
+    const validation = fileRules[0](selectedFile.value)
+    if (validation !== true) {
+      fileError.value = validation
+      selectedFile.value = null
+    }
+  } catch (error) {
+    console.error('Error validating file:', error)
+    fileError.value = 'Error al validar el archivo'
     selectedFile.value = null
   }
 }

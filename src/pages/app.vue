@@ -87,10 +87,10 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
+
 .app-page {
   display: grid;
   grid-template-rows: auto 1fr;
-  min-height: 100vh;
   background: #0F0F23; /* Coincide con el nuevo tema */
   color: #F1F5F9;
   position: relative; // Necesario para el v-fab

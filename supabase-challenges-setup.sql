@@ -6,6 +6,9 @@ CREATE TABLE IF NOT EXISTS challenges (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   description TEXT NOT NULL,
   is_completed BOOLEAN DEFAULT FALSE,
+  is_reserved BOOLEAN DEFAULT FALSE,
+  reserved_at TIMESTAMP WITH TIME ZONE,
+  reserved_by TEXT,
   completed_at TIMESTAMP WITH TIME ZONE,
   completed_by TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -14,6 +17,7 @@ CREATE TABLE IF NOT EXISTS challenges (
 
 -- 2. Crear índices para mejorar el rendimiento
 CREATE INDEX IF NOT EXISTS idx_challenges_is_completed ON challenges(is_completed);
+CREATE INDEX IF NOT EXISTS idx_challenges_is_reserved ON challenges(is_reserved);
 CREATE INDEX IF NOT EXISTS idx_challenges_created_at ON challenges(created_at DESC);
 
 -- 3. Habilitar Row Level Security (RLS)
@@ -78,6 +82,9 @@ END $$;
 COMMENT ON TABLE challenges IS 'Tabla para almacenar retos fotográficos de la boda';
 COMMENT ON COLUMN challenges.description IS 'Descripción detallada del reto';
 COMMENT ON COLUMN challenges.is_completed IS 'Indica si el reto ha sido completado';
+COMMENT ON COLUMN challenges.is_reserved IS 'Indica si el reto está reservado por un dispositivo';
+COMMENT ON COLUMN challenges.reserved_at IS 'Fecha y hora de reserva del reto';
+COMMENT ON COLUMN challenges.reserved_by IS 'Identificador del dispositivo que reservó el reto';
 COMMENT ON COLUMN challenges.completed_at IS 'Fecha y hora de completado del reto';
 COMMENT ON COLUMN challenges.completed_by IS 'Identificador de quien completó el reto';
 COMMENT ON COLUMN challenges.created_at IS 'Fecha y hora de creación del reto';
