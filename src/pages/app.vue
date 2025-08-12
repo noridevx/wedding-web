@@ -7,23 +7,24 @@
         :is-refreshing="isRefreshing" 
         @refresh="handleRefresh"
       >
-        <PhotoUploader 
-          @upload-success="handleUploadSuccess"
-          @upload-error="handleUploadError"
-        />
-        
         <PhotoGallery :photos="photos" />
       </PullToRefresh>
     </main>
+    
+    <!-- FAB Button para subir fotos -->
+    <FabUploadButton 
+      @upload-success="handleUploadSuccess"
+      @upload-error="handleUploadError"
+    />
   </div>
 </template>
 
 <script setup>
 import { onMounted } from 'vue'
 import AppHeader from '@/components/AppHeader.vue'
-import PhotoUploader from '@/components/PhotoUploader.vue'
 import PhotoGallery from '@/components/PhotoGallery.vue'
 import PullToRefresh from '@/components/PullToRefresh.vue'
+import FabUploadButton from '@/components/FabUploadButton.vue'
 import { usePhotoGallery } from '@/composables/usePhotoGallery'
 
 const { photos, isRefreshing, listPhotos, refresh } = usePhotoGallery()
@@ -38,7 +39,7 @@ function handleUploadSuccess() {
 }
 
 function handleUploadError(errorMessage) {
-  alert(`Error uploading: ${errorMessage}`)
+  console.error('Upload error:', errorMessage)
 }
 
 onMounted(() => {

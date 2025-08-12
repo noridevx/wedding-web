@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { supabase, SUPABASE_BUCKET, SUPABASE_FOLDER } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 export function usePhotoGallery() {
   const photos = ref([])
@@ -12,17 +12,35 @@ export function usePhotoGallery() {
       return
     }
     
-    const folder = `${SUPABASE_FOLDER}`
-    const { data, error } = await supabase.storage.from(SUPABASE_BUCKET).list(folder, { limit: 1000 })
-    
-    if (error) {
-      console.error('Error listing photos:', error)
-      return
+    try {
+      // Obtener fotos desde la tabla 'photos' en lugar del storage directamente
+      const { data, error } = await supabase
+        .from('photos')
+        .select('*')
+        .order('uploaded_at', { ascending: false })
+        .limit(1000)
+      
+      if (error) {
+        console.error('Error listing photos:', error)
+        return
+      }
+      
+      // Filtrar solo imágenes y mapear a un formato más simple
+      photos.value = (data || [])
+        .filter(item => item?.file_type?.startsWith?.('image/'))
+        .map(item => ({
+          id: item.id,
+          url: item.public_url,
+          comment: item.comment,
+          fileName: item.file_name,
+          fileSize: item.file_size,
+          uploadedAt: item.uploaded_at
+        }))
+        
+    } catch (error) {
+      console.error('Error in listPhotos:', error)
+      photos.value = []
     }
-    
-    photos.value = (data || [])
-      .filter(item => item?.metadata?.mimetype?.startsWith?.('image/'))
-      .map(item => supabase.storage.from(SUPABASE_BUCKET).getPublicUrl(`${folder}/${item.name}`).data.publicUrl)
   }
 
   async function refresh() {
