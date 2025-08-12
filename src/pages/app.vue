@@ -3,7 +3,11 @@
     <AppHeader :is-refreshing="isRefreshing" />
 
     <!-- Botón de reto -->
-    <ChallengeButton />
+    <ChallengeButton 
+      ref="challengeButtonRef"
+      @refresh-photos="handleRefreshPhotos"
+      @open-challenge-modal="openChallengeModal"
+    />
     
     <main class="app-content">
       <PhotoGallery 
@@ -16,33 +20,69 @@
     
     <!-- FAB Button para subir fotos -->
     <FabUploadButton 
+      ref="fabButtonRef"
+      :force-challenge="forcedChallenge"
       @upload-success="handleUploadSuccess"
       @upload-error="handleUploadError"
+      @refresh-photos="handleRefreshPhotos"
+      @modal-opened="handleModalOpened"
     />
   </div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import AppHeader from '@/components/AppHeader.vue'
 import PhotoGallery from '@/components/PhotoGallery.vue'
 import FabUploadButton from '@/components/FabUploadButton.vue'
 import ChallengeButton from '@/components/ChallengeButton.vue'
 import { usePhotoGallery } from '@/composables/usePhotoGallery'
+import { useChallenges } from '@/composables/useChallenges'
 
 const { photos, filteredPhotos, isRefreshing, showOnlyChallenges, listPhotos, toggleChallengeFilter } = usePhotoGallery()
+const { fetchChallenges } = useChallenges()
+
+const challengeButtonRef = ref(null)
+const fabButtonRef = ref(null)
+const forcedChallenge = ref(null)
 
 function handleUploadSuccess() {
   // Refrescar la galería después de una subida exitosa
   listPhotos()
 }
 
+function handleRefreshPhotos() {
+  // Refrescar la galería después de completar un reto
+  listPhotos()
+  // Obtener nuevo reto
+  if (challengeButtonRef.value) {
+    challengeButtonRef.value.updateChallenge()
+  }
+}
+
+function openChallengeModal(challenge) {
+  // Forzar el reto en el FAB button y abrir el modal
+  forcedChallenge.value = challenge
+  // Abrir el modal del FAB button
+  if (fabButtonRef.value) {
+    fabButtonRef.value.openModal()
+  }
+}
+
+function handleModalOpened(type) {
+  if (type === 'normal') {
+    // Limpiar el reto forzado cuando se abre el modal normal
+    forcedChallenge.value = null
+  }
+}
+
 function handleUploadError(errorMessage) {
   console.error('Upload error:', errorMessage)
 }
 
-onMounted(() => {
+onMounted(async () => {
   listPhotos()
+  await fetchChallenges()
 })
 </script>
 

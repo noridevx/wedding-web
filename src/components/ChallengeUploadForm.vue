@@ -10,8 +10,10 @@
         accept="image/*"
         prepend-icon="mdi-camera"
         label="Seleccionar foto para completar el reto"
+        hide-details="auto"
+        density="compact"
         :rules="fileRules"
-        :error-messages="fileError"
+        :error-messages="fileError || null"
         @change="validateFile"
       />
 
@@ -194,7 +196,7 @@ async function handleUpload() {
           file_size: selectedFile.value.size,
           file_type: selectedFile.value.type,
           public_url: urlData.publicUrl,
-          comment: comment.value || `Reto completado: ${props.challenge.description}`,
+          comment: comment.value,
           challenge_id: props.challenge.id,
           uploaded_at: new Date().toISOString()
         }
@@ -256,12 +258,9 @@ function resetForm() {
 </script>
 
 <style scoped lang="scss">
-.challenge-upload-form {
-  padding: 16px 0;
-}
 
 .image-preview-container {
-  margin-top: 16px;
+  margin-top: 4px;
   text-align: center;
   
   .rounded {

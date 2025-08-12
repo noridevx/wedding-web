@@ -6,19 +6,28 @@
     color="primary"
     size="x-large"
     class="fab-button"
-    @click="showModal = true"
+    @click="openModalNormal()"
   />
 
   <!-- Modal para subir fotos -->
   <v-dialog
     v-model="showModal"
-    max-width="500px"
+    max-width="600px"
     persistent
   >
     <v-card class="upload-modal-card">
       <!-- Cabecera fija -->
       <v-card-title class="d-flex align-center justify-space-between upload-modal-header">
-        <span>Subir Foto</span>
+        <div class="d-flex align-center">
+          <v-icon
+            v-if="currentChallenge"
+            color="warning"
+            class="mr-2"
+          >
+            mdi-trophy
+          </v-icon>
+          <span>{{ currentChallenge ? 'Completar Reto' : 'Subir Foto' }}</span>
+        </div>
         <v-btn
           icon="mdi-close"
           variant="text"
@@ -30,6 +39,33 @@
       <!-- Contenido scrolleable -->
       <div class="upload-modal-content">
         <v-card-text>
+          <!-- Información del reto (si aplica) -->
+          <div
+            v-if="currentChallenge"
+            class="challenge-info"
+          >
+            <div class="d-flex align-center justify-space-between">
+              <h3 class="text-h6 font-dancing">
+                ¡Nuevo Reto!
+              </h3>
+              <!-- Estado del reto -->
+              <v-chip
+                :color="currentChallenge.is_completed ? 'success' : 'warning'"
+                variant="outlined"
+                size="small"
+              >
+                <v-icon start>
+                  {{ currentChallenge.is_completed ? 'mdi-check-circle' : 'mdi-clock-outline' }}
+                </v-icon>
+                {{ currentChallenge.is_completed ? 'Completado' : 'Pendiente' }}
+              </v-chip>
+            </div>
+            <p class="text-body-1 mb-1">
+              {{ currentChallenge.description }}
+            </p>
+            
+          </div>
+
           <v-form
             ref="form"
             @submit.prevent="handleUpload"
@@ -40,7 +76,10 @@
               accept="image/*"
               prepend-icon="mdi-image"
               label="Seleccionar foto"
+              hide-details="auto"
+              density="compact"
               :rules="fileRules"
+              variant="outlined"
               :error-messages="fileError"
               @change="validateFile"
             />
@@ -62,11 +101,12 @@
             <!-- Campo de comentario -->
             <v-textarea
               v-model="comment"
-              label="Comentario (opcional)"
-              placeholder="Añade un comentario a tu foto..."
+              :label="currentChallenge ? 'Comentario sobre el reto (opcional)' : 'Comentario (opcional)'"
+              :placeholder="currentChallenge ? 'Cuéntanos cómo completaste este reto...' : 'Añade un comentario a tu foto...'"
               rows="3"
               auto-grow
               variant="outlined"
+              hide-details="auto"
               class="mt-4"
             />
 
@@ -106,13 +146,19 @@
           Cancelar
         </v-btn>
         <v-btn
-          color="primary"
+          :color="currentChallenge ? 'success' : 'primary'"
           variant="tonal"
           :loading="isUploading"
           :disabled="!selectedFile || isUploading"
           @click="handleUpload"
         >
-          {{ isUploading ? 'Subiendo...' : 'Subir Foto' }}
+          <v-icon
+            v-if="currentChallenge"
+            start
+          >
+            mdi-trophy-check
+          </v-icon>
+          {{ isUploading ? (currentChallenge ? 'Completando reto...' : 'Subiendo...') : (currentChallenge ? 'Completar Reto' : 'Subir Foto') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -131,8 +177,22 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { supabase, SUPABASE_BUCKET, SUPABASE_FOLDER } from '@/lib/supabase'
+import { useChallenges } from '@/composables/useChallenges'
 
-const emit = defineEmits(['upload-success', 'upload-error'])
+const emit = defineEmits(['upload-success', 'upload-error', 'refresh-photos', 'modal-opened'])
+
+// Props para recibir el reto desde el componente padre
+const props = defineProps({
+  challenge: {
+    type: Object,
+    default: null
+  },
+  // Prop para forzar la apertura del modal con un reto específico
+  forceChallenge: {
+    type: Object,
+    default: null
+  }
+})
 
 const showModal = ref(false)
 const selectedFile = ref(null)
@@ -142,6 +202,12 @@ const showSnackbar = ref(false)
 const snackbarMessage = ref('')
 const snackbarColor = ref('success')
 const fileError = ref('')
+
+// Lógica de retos
+const { completeChallenge } = useChallenges()
+
+// Computed para el reto actual
+const currentChallenge = computed(() => props.forceChallenge || props.challenge)
 
 
 
@@ -157,6 +223,25 @@ const fileRules = [
 const imagePreview = computed(() => {
   if (!selectedFile.value) return null
   return URL.createObjectURL(selectedFile.value)
+})
+
+function openModal() {
+  showModal.value = true
+  // Emitir evento para indicar que se abrió con reto
+  emit('modal-opened', 'challenge')
+}
+
+function openModalNormal() {
+  // Limpiar cualquier reto forzado y abrir modal normal
+  showModal.value = true
+  // Emitir evento para limpiar el reto forzado
+  emit('modal-opened', 'normal')
+}
+
+// Exponer función para abrir modal desde el componente padre
+defineExpose({
+  openModal,
+  openModalNormal
 })
 
 function validateFile() {
@@ -217,7 +302,8 @@ async function handleUpload() {
           file_size: selectedFile.value.size,
           file_type: selectedFile.value.type,
           public_url: urlData.publicUrl,
-          comment: comment.value || null,
+          comment: comment.value,
+          challenge_id: currentChallenge.value?.id || null,
           uploaded_at: new Date().toISOString()
         }
       ])
@@ -230,13 +316,30 @@ async function handleUpload() {
       throw photoError
     }
 
+    // Si es un reto, completarlo
+    if (currentChallenge.value) {
+      const success = await completeChallenge(
+        currentChallenge.value.id,
+        photoData[0].id,
+        'anonymous'
+      )
+
+      if (!success) {
+        throw new Error('Error al completar el reto')
+      }
+    }
+
     console.log('Upload success:', photoData)
     
     // Mostrar notificación de éxito
-    showNotification('Foto subida exitosamente', 'success')
+    const message = currentChallenge.value ? '¡Reto completado exitosamente!' : 'Foto subida exitosamente'
+    showNotification(message, 'success')
     
-    // Emitir evento de éxito
+    // Emitir eventos
     emit('upload-success', photoData[0])
+    if (currentChallenge.value) {
+      emit('refresh-photos')
+    }
     
     // Limpiar formulario
     closeModal()
@@ -297,7 +400,7 @@ function closeModal() {
 }
 
 .image-preview-container {
-  margin-top: 16px;
+  margin-top: 4px;
   text-align: center;
   
   .rounded {
@@ -310,6 +413,24 @@ function closeModal() {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.challenge-info {
+  padding: 8px;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1));
+  border-radius: 8px;
+  border: 1px solid rgba(255, 193, 7, 0.2);
+  
+  h3 {
+    color: #FFC107;
+    font-weight: 600;
+  }
+  
+  p {
+    color: #F1F5F9;
+    line-height: 1.6;
+  }
 }
 
 // Responsive para móviles
