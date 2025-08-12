@@ -10,9 +10,13 @@ import 'vuetify/styles'
 
 // Composables
 import { createVuetify } from 'vuetify'
+import { VPullToRefresh } from 'vuetify/labs/VPullToRefresh'
 
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
+  components: {
+    VPullToRefresh,
+  },
   theme: {
     defaultTheme: 'dark',
     themes: {

@@ -149,6 +149,7 @@ onUnmounted(() => {
   overflow-x: hidden;
   height: 100%;
   will-change: transform;
+  background: transparent;
   
   // Estilos para el pull to refresh
   &::-webkit-scrollbar {

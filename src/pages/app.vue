@@ -3,12 +3,7 @@
     <AppHeader :is-refreshing="isRefreshing" />
     
     <main class="app-content">
-      <PullToRefresh 
-        :is-refreshing="isRefreshing" 
-        @refresh="handleRefresh"
-      >
-        <PhotoGallery :photos="photos" />
-      </PullToRefresh>
+      <PhotoGallery :photos="photos" />
     </main>
     
     <!-- FAB Button para subir fotos -->
@@ -23,7 +18,6 @@
 import { onMounted } from 'vue'
 import AppHeader from '@/components/AppHeader.vue'
 import PhotoGallery from '@/components/PhotoGallery.vue'
-import PullToRefresh from '@/components/PullToRefresh.vue'
 import FabUploadButton from '@/components/FabUploadButton.vue'
 import { usePhotoGallery } from '@/composables/usePhotoGallery'
 

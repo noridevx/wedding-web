@@ -269,7 +269,6 @@ function closeModal() {
   position: fixed !important;
   bottom: 24px !important;
   right: 24px !important;
-  z-index: 9999 !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
 }
 

@@ -62,20 +62,8 @@
             v-if="currentPhoto?.comment"
             class="comment-content"
           >
-            <h4 class="text-subtitle-1 mb-2">
-              Comentario:
-            </h4>
             <p class="text-body-2">
               {{ currentPhoto.comment }}
-            </p>
-          </div>
-          
-          <div
-            v-else
-            class="no-comment"
-          >
-            <p class="text-caption text-grey">
-              Sin comentario
             </p>
           </div>
         </div>
@@ -328,10 +316,8 @@ onUnmounted(() => {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   
   .comment-content {
-    background: rgba(25, 118, 210, 0.1);
     padding: 16px;
     border-radius: 8px;
-    border-left: 4px solid #1976d2;
     
     h4 {
       color: #1976d2;
@@ -343,18 +329,6 @@ onUnmounted(() => {
       margin: 0;
       line-height: 1.5;
       color: rgba(255, 255, 255, 0.9);
-    }
-  }
-  
-  .no-comment {
-    text-align: center;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 8px;
-    
-    p {
-      margin: 0;
-      color: rgba(255, 255, 255, 0.5);
     }
   }
 }
