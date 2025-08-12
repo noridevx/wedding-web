@@ -1,7 +1,7 @@
 <template>
   <NavBar />
   <Landing />
-  <DressCode class="mt-10"/>
+  <DressCode class="mt-10" />
   <Gallery />
   <Place />
   <Footer />
@@ -14,9 +14,6 @@ import Gallery from '@/components/Gallery.vue';
 import Landing from '@/components/Landing.vue';
 import NavBar from '@/components/NavBar.vue';
 import Place from '@/components/Place.vue';
-import { ref } from 'vue';
-
-const showModal = ref(false);
 </script>
 
 <style lang="scss">
