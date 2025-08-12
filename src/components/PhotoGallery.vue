@@ -1,18 +1,52 @@
 <template>
   <section class="gallery-grid">
+    <!-- Filtro de retos -->
+    <div class="filter-section">
+      <v-btn
+        :color="showOnlyChallenges ? 'warning' : 'grey'"
+        variant="outlined"
+        size="small"
+        class="filter-btn"
+        @click="toggleChallengeFilter"
+      >
+        <v-icon
+          start
+          :color="showOnlyChallenges ? 'warning' : 'grey'"
+        >
+          mdi-trophy
+        </v-icon>
+        {{ showOnlyChallenges ? 'Solo Retos' : 'Todas las Fotos' }}
+        <v-icon
+          end
+          :color="showOnlyChallenges ? 'warning' : 'grey'"
+        >
+          {{ showOnlyChallenges ? 'mdi-check' : 'mdi-filter' }}
+        </v-icon>
+      </v-btn>
+      
+      <!-- Contador de fotos -->
+      <div class="photo-counter">
+        <span class="text-caption">
+          {{ filteredPhotos.length }} de {{ photos.length }} fotos
+        </span>
+      </div>
+    </div>
+
     <div
-      v-if="photos.length === 0"
+      v-if="filteredPhotos.length === 0"
       class="empty-state"
     >
       <v-icon
         size="48"
         color="grey-lighten-1"
       >
-        mdi-image-multiple
+        {{ showOnlyChallenges ? 'mdi-trophy-off' : 'mdi-image-multiple' }}
       </v-icon>
-      <p>No hay fotos subidas aún</p>
+      <p>
+        {{ showOnlyChallenges ? 'No hay fotos de retos aún' : 'No hay fotos subidas aún' }}
+      </p>
       <p class="text-caption">
-        Desliza hacia abajo para actualizar
+        {{ showOnlyChallenges ? 'Completa algunos retos para ver fotos aquí' : 'Desliza hacia abajo para actualizar' }}
       </p>
     </div>
     <v-row
@@ -20,7 +54,7 @@
       dense
     >
       <v-col
-        v-for="(photo, index) in photos"
+        v-for="(photo, index) in filteredPhotos"
         :key="photo.id"
         cols="6"
         sm="4"
@@ -83,7 +117,7 @@
     <!-- Modal de detalle con navegación -->
     <PhotoDetailModal
       v-model="showDetailModal"
-      :photos="photos"
+      :photos="filteredPhotos"
       :initial-photo-index="selectedPhotoIndex"
     />
   </section>
@@ -97,6 +131,18 @@ defineProps({
   photos: {
     type: Array,
     default: () => []
+  },
+  filteredPhotos: {
+    type: Array,
+    default: () => []
+  },
+  showOnlyChallenges: {
+    type: Boolean,
+    default: false
+  },
+  toggleChallengeFilter: {
+    type: Function,
+    default: () => {}
   }
 })
 
@@ -111,6 +157,31 @@ function showPhotoDetail(index) {
 
 <style scoped lang="scss">
 .gallery-grid {
+  .filter-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding: 0 4px;
+    
+    .filter-btn {
+      border-radius: 20px;
+      text-transform: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+    }
+    
+    .photo-counter {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.875rem;
+    }
+  }
+  
   .photo-card {
     border-radius: 12px;
     overflow: hidden;

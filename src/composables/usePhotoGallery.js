@@ -1,9 +1,10 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 
 export function usePhotoGallery() {
   const photos = ref([])
   const isRefreshing = ref(false)
+  const showOnlyChallenges = ref(false)
 
   async function listPhotos() {
     // If no Supabase, just leave any statics empty; could fallback to local assets if desired
@@ -18,7 +19,7 @@ export function usePhotoGallery() {
         .from('photos')
         .select(`
           *,
-          challenges!inner(
+          challenges(
             id,
             description,
             is_completed
@@ -68,10 +69,25 @@ export function usePhotoGallery() {
     }
   }
 
+  // Computed para filtrar fotos según el estado del filtro
+  const filteredPhotos = computed(() => {
+    if (!showOnlyChallenges.value) {
+      return photos.value
+    }
+    return photos.value.filter(photo => photo.challenge)
+  })
+
+  function toggleChallengeFilter() {
+    showOnlyChallenges.value = !showOnlyChallenges.value
+  }
+
   return {
     photos,
+    filteredPhotos,
     isRefreshing,
+    showOnlyChallenges,
     listPhotos,
-    refresh
+    refresh,
+    toggleChallengeFilter
   }
 }

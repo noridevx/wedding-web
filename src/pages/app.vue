@@ -6,7 +6,12 @@
     <ChallengeButton />
     
     <main class="app-content">
-      <PhotoGallery :photos="photos" />
+      <PhotoGallery 
+        :photos="photos" 
+        :filtered-photos="filteredPhotos"
+        :show-only-challenges="showOnlyChallenges"
+        :toggle-challenge-filter="toggleChallengeFilter"
+      />
     </main>
     
     <!-- FAB Button para subir fotos -->
@@ -25,7 +30,7 @@ import FabUploadButton from '@/components/FabUploadButton.vue'
 import ChallengeButton from '@/components/ChallengeButton.vue'
 import { usePhotoGallery } from '@/composables/usePhotoGallery'
 
-const { photos, isRefreshing, listPhotos } = usePhotoGallery()
+const { photos, filteredPhotos, isRefreshing, showOnlyChallenges, listPhotos, toggleChallengeFilter } = usePhotoGallery()
 
 function handleUploadSuccess() {
   // Refrescar la galería después de una subida exitosa
