@@ -52,8 +52,8 @@ onMounted(() => {
   display: grid;
   grid-template-rows: auto 1fr;
   min-height: 100vh;
-  background: #0f0f10; /* distinto al sitio principal */
-  color: #fff;
+  background: #0F0F23; /* Coincide con el nuevo tema */
+  color: #F1F5F9;
   position: relative; // Necesario para el v-fab
   overflow: hidden; // Restaurar para evitar scroll del body
 }

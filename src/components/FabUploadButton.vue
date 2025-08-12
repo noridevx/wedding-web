@@ -1,6 +1,7 @@
 <template>
   <!-- FAB Button -->
   <v-btn
+    v-show="!showModal"
     icon="mdi-plus"
     color="primary"
     size="x-large"
@@ -14,8 +15,9 @@
     max-width="500px"
     persistent
   >
-    <v-card>
-      <v-card-title class="d-flex align-center justify-space-between">
+    <v-card class="upload-modal-card">
+      <!-- Cabecera fija -->
+      <v-card-title class="d-flex align-center justify-space-between upload-modal-header">
         <span>Subir Foto</span>
         <v-btn
           icon="mdi-close"
@@ -25,75 +27,79 @@
         />
       </v-card-title>
 
-      <v-card-text>
-        <v-form
-          ref="form"
-          @submit.prevent="handleUpload"
-        >
-          <!-- Selector de archivo -->
-          <v-file-input
-            v-model="selectedFile"
-            accept="image/*"
-            prepend-icon="mdi-image"
-            label="Seleccionar foto"
-            :rules="fileRules"
-            :error-messages="fileError"
-            @change="validateFile"
-          />
-
-          <!-- Vista previa de la imagen -->
-          <div
-            v-if="imagePreview"
-            class="image-preview-container"
+      <!-- Contenido scrolleable -->
+      <div class="upload-modal-content">
+        <v-card-text>
+          <v-form
+            ref="form"
+            @submit.prevent="handleUpload"
           >
-            <v-img
-              :src="imagePreview"
-              aspect-ratio="1"
-              class="rounded"
-              cover
-              max-height="200"
+            <!-- Selector de archivo -->
+            <v-file-input
+              v-model="selectedFile"
+              accept="image/*"
+              prepend-icon="mdi-image"
+              label="Seleccionar foto"
+              :rules="fileRules"
+              :error-messages="fileError"
+              @change="validateFile"
             />
-          </div>
 
-          <!-- Campo de comentario -->
-          <v-textarea
-            v-model="comment"
-            label="Comentario (opcional)"
-            placeholder="Añade un comentario a tu foto..."
-            rows="3"
-            auto-grow
-            variant="outlined"
-            class="mt-4"
-          />
-
-          <!-- Información del archivo -->
-          <div
-            v-if="selectedFile"
-            class="file-info mt-3"
-          >
-            <v-chip
-              size="small"
-              color="info"
-              variant="outlined"
+            <!-- Vista previa de la imagen -->
+            <div
+              v-if="imagePreview"
+              class="image-preview-container"
             >
-              {{ selectedFile.name }}
-            </v-chip>
-            <v-chip
-              size="small"
-              color="success"
-              variant="outlined"
-              class="ml-2"
-            >
-              {{ formatFileSize(selectedFile.size) }}
-            </v-chip>
-          </div>
-        </v-form>
-      </v-card-text>
+              <v-img
+                :src="imagePreview"
+                aspect-ratio="1"
+                class="rounded"
+                cover
+                max-height="200"
+              />
+            </div>
 
-      <v-card-actions class="pa-4">
+            <!-- Campo de comentario -->
+            <v-textarea
+              v-model="comment"
+              label="Comentario (opcional)"
+              placeholder="Añade un comentario a tu foto..."
+              rows="3"
+              auto-grow
+              variant="outlined"
+              class="mt-4"
+            />
+
+            <!-- Información del archivo -->
+            <div
+              v-if="selectedFile"
+              class="file-info mt-3"
+            >
+              <v-chip
+                size="small"
+                color="info"
+                variant="outlined"
+              >
+                {{ selectedFile.name }}
+              </v-chip>
+              <v-chip
+                size="small"
+                color="success"
+                variant="outlined"
+                class="ml-2"
+              >
+                {{ formatFileSize(selectedFile.size) }}
+              </v-chip>
+            </div>
+          </v-form>
+        </v-card-text>
+      </div>
+
+      <!-- Botones fijos -->
+      <v-card-actions class="upload-modal-actions">
         <v-spacer />
         <v-btn
-          variant="outlined"
+          variant="text"
           :disabled="isUploading"
           @click="closeModal"
         >
@@ -101,6 +107,7 @@
         </v-btn>
         <v-btn
           color="primary"
+          variant="tonal"
           :loading="isUploading"
           :disabled="!selectedFile || isUploading"
           @click="handleUpload"
@@ -266,6 +273,30 @@ function closeModal() {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
 }
 
+// Estilos del modal con layout fijo
+.upload-modal-card {
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+}
+
+.upload-modal-header {
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.upload-modal-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.upload-modal-actions {
+  flex-shrink: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(30, 27, 75, 0.5);
+}
+
 .image-preview-container {
   margin-top: 16px;
   text-align: center;
@@ -287,6 +318,10 @@ function closeModal() {
   .fab-button {
     bottom: 16px !important;
     right: 16px !important;
+  }
+  
+  .upload-modal-card {
+    max-height: 90vh;
   }
 }
 </style>

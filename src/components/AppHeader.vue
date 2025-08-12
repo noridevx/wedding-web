@@ -1,6 +1,6 @@
 <template>
   <v-app-bar
-    color="rgba(15, 15, 16, 0.8)"
+    color="rgba(30, 27, 75, 0.9)"
     elevation="0"
     class="app-header"
   >
