@@ -7,7 +7,7 @@
     </div>
     <v-row v-else dense>
       <v-col
-        v-for="photo in photos"
+        v-for="(photo, index) in photos"
         :key="photo.id"
         cols="6"
         sm="4"
@@ -19,7 +19,7 @@
             aspect-ratio="1"
             class="photo-image"
             cover
-            @click="showPhotoDetail(photo)"
+            @click="showPhotoDetail(index)"
           >
             <template #placeholder>
               <v-row class="fill-height ma-0" align="center" justify="center">
@@ -36,61 +36,20 @@
       </v-col>
     </v-row>
 
-    <!-- Modal para ver foto en detalle -->
-    <v-dialog v-model="showDetailModal" max-width="600px">
-      <v-card>
-        <v-card-title class="d-flex align-center justify-space-between">
-          <span>Detalle de la Foto</span>
-          <v-btn
-            icon="mdi-close"
-            variant="text"
-            size="small"
-            @click="showDetailModal = false"
-          />
-        </v-card-title>
-        
-        <v-card-text class="pa-0">
-          <v-img
-            :src="selectedPhoto?.url"
-            aspect-ratio="1"
-            cover
-            class="detail-image"
-          />
-          
-          <div class="pa-4">
-            <!-- Información de la foto -->
-            <div class="photo-info mb-3">
-              <v-chip size="small" color="info" variant="outlined">
-                {{ selectedPhoto?.fileName }}
-              </v-chip>
-              <v-chip size="small" color="success" variant="outlined" class="ml-2">
-                {{ formatFileSize(selectedPhoto?.fileSize) }}
-              </v-chip>
-              <v-chip size="small" color="warning" variant="outlined" class="ml-2">
-                {{ formatDate(selectedPhoto?.uploadedAt) }}
-              </v-chip>
-            </div>
-            
-            <!-- Comentario completo -->
-            <div v-if="selectedPhoto?.comment" class="comment-section">
-              <h4 class="text-subtitle-1 mb-2">Comentario:</h4>
-              <p class="text-body-2">{{ selectedPhoto.comment }}</p>
-            </div>
-            
-            <div v-else class="no-comment">
-              <p class="text-caption text-grey">Sin comentario</p>
-            </div>
-          </div>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
+    <!-- Modal de detalle con navegación -->
+    <PhotoDetailModal
+      v-model="showDetailModal"
+      :photos="photos"
+      :initial-photo-index="selectedPhotoIndex"
+    />
   </section>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import PhotoDetailModal from './PhotoDetailModal.vue'
 
-const props = defineProps({
+defineProps({
   photos: {
     type: Array,
     default: () => []
@@ -98,31 +57,11 @@ const props = defineProps({
 })
 
 const showDetailModal = ref(false)
-const selectedPhoto = ref(null)
+const selectedPhotoIndex = ref(0)
 
-function showPhotoDetail(photo) {
-  selectedPhoto.value = photo
+function showPhotoDetail(index) {
+  selectedPhotoIndex.value = index
   showDetailModal.value = true
-}
-
-function formatFileSize(bytes) {
-  if (!bytes) return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-}
-
-function formatDate(dateString) {
-  if (!dateString) return ''
-  const date = new Date(dateString)
-  return date.toLocaleDateString('es-ES', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
 }
 </script>
 
@@ -169,40 +108,6 @@ function formatDate(dateString) {
       }
     }
   }
-}
-
-.detail-image {
-  border-radius: 8px 8px 0 0;
-}
-
-.photo-info {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.comment-section {
-  background: rgba(0, 0, 0, 0.02);
-  padding: 12px;
-  border-radius: 8px;
-  border-left: 4px solid #1976d2;
-  
-  h4 {
-    color: #1976d2;
-    margin: 0;
-  }
-  
-  p {
-    margin: 0;
-    line-height: 1.5;
-  }
-}
-
-.no-comment {
-  text-align: center;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.02);
-  border-radius: 8px;
 }
 
 // Responsive para móviles

@@ -29,9 +29,25 @@ Esta carpeta contiene todos los componentes reutilizables de la aplicación de f
 **Características**:
 - Grid responsive
 - Tarjetas con hover effects
-- Modal de detalle de foto
-- Visualización de comentarios
-- Información de archivo y fecha
+- Integración con PhotoDetailModal
+- Visualización de comentarios en tarjetas
+
+### 🔍 PhotoDetailModal.vue
+**Propósito**: Modal de detalle con navegación entre fotos
+**Props**:
+- `modelValue` (Boolean): Control de visibilidad del modal
+- `photos` (Array): Array de fotos para navegar
+- `initialPhotoIndex` (Number): Índice inicial de la foto
+**Events**:
+- `update:modelValue`: Emitido para controlar visibilidad
+**Características**:
+- Modal fullscreen
+- Navegación con flechas (izquierda/derecha)
+- Navegación con teclado (flechas, Escape)
+- Indicadores de posición (puntos)
+- Contador de fotos (X / Y)
+- Comentarios completos
+- Diseño responsive
 
 ### 🔄 PullToRefresh.vue
 **Propósito**: Componente reutilizable para pull-to-refresh
@@ -106,6 +122,23 @@ Ejecuta el script `supabase-setup.sql` en tu dashboard de Supabase para crear la
 - `uploaded_at`: Fecha de subida
 - `created_at`: Fecha de creación
 
+## Navegación en el Modal
+
+### Controles de Navegación
+- **Flechas**: Botones izquierda/derecha en pantalla
+- **Teclado**: 
+  - `←` / `→`: Navegar entre fotos
+  - `Escape`: Cerrar modal
+- **Indicadores**: Puntos en la parte inferior para ir directamente a una foto
+- **Contador**: Muestra posición actual (ej: "3 / 10")
+
+### Características de UX
+- **Fullscreen**: Modal ocupa toda la pantalla
+- **Responsive**: Adaptado para móviles y desktop
+- **Accesibilidad**: Controles de teclado y focus visible
+- **Animaciones**: Transiciones suaves entre fotos
+- **Loading**: Indicador de carga al cambiar fotos
+
 ## Beneficios de esta Arquitectura
 
 1. **Reutilización**: Los componentes pueden usarse en otras partes de la app
@@ -116,3 +149,5 @@ Ejecuta el script `supabase-setup.sql` en tu dashboard de Supabase para crear la
 6. **UX Mejorada**: FAB button más intuitivo que formulario tradicional
 7. **Persistencia**: Comentarios guardados en base de datos
 8. **Feedback Visual**: Notificaciones y estados de carga claros
+9. **Navegación Avanzada**: Modal con navegación completa entre fotos
+10. **Accesibilidad**: Controles de teclado y navegación por puntos
