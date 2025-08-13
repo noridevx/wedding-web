@@ -18,7 +18,21 @@
   - Guardado del teléfono junto a cada foto (no al reto)
   - Indicador visual del estado del teléfono en retos completados
 
-#### 2. Crear más de 200 retos
+#### 2. ✅ Implementar paginado con infinite scroll
+- [x] **Descripción**: Implementar paginado con infinite scroll para todas las fotos
+- [x] **Archivos modificados**:
+  - `src/composables/usePhotoGallery.js` - Paginado y carga progresiva
+  - `src/components/PhotoGallery.vue` - Infinite scroll y indicadores de carga
+  - `src/pages/app.vue` - Integración de nuevas props
+- [x] **Funcionalidades implementadas**:
+  - Paginado de 20 fotos por página
+  - Infinite scroll automático al llegar al final
+  - Indicadores de carga y fin de fotos
+  - Compatible con filtro de retos
+  - Optimización de consultas según filtro activo
+  - Recarga automática al cambiar filtros
+
+#### 3. Crear más de 200 retos
 - [ ] **Descripción**: Generar una base de datos con más de 200 retos variados
 - [ ] **Archivos a modificar**:
   - `supabase-challenges-setup.sql` - Añadir más datos de ejemplo
@@ -39,7 +53,8 @@
 
 **Alta Prioridad:**
 1. ✅ Añadir teléfono para los retos
-2. Crear más de 200 retos
+2. ✅ Implementar paginado con infinite scroll
+3. Crear más de 200 retos
 
 **Media Prioridad:**
 - Optimizar rendimiento con muchos retos
@@ -59,6 +74,14 @@
 ALTER TABLE photos ADD COLUMN phone TEXT;
 ```
 
+#### Para el paginado (COMPLETADO):
+```javascript
+// Paginado con infinite scroll
+const pageSize = 20
+const offset = currentPage * pageSize
+// Consulta optimizada según filtro activo
+```
+
 #### Para los retos masivos:
 - Usar script de inserción batch para mejor rendimiento
 - Considerar categorización para facilitar selección
@@ -74,6 +97,7 @@ ALTER TABLE photos ADD COLUMN phone TEXT;
 - Highlighting de fotos de retos
 - Sistema de localStorage para persistencia
 - **Campo de teléfono opcional para retos**
+- **Paginado con infinite scroll para todas las fotos**
 
 **🔄 En Progreso:**
 - Ninguna tarea actualmente

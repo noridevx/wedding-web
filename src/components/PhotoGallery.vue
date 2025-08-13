@@ -33,7 +33,7 @@
     </div>
 
     <div
-      v-if="filteredPhotos.length === 0"
+      v-if="filteredPhotos.length === 0 && !isLoading"
       class="empty-state"
     >
       <v-icon
@@ -49,6 +49,7 @@
         {{ showOnlyChallenges ? 'Completa algunos retos para ver fotos aquí' : 'Desliza hacia abajo para actualizar' }}
       </p>
     </div>
+    
     <v-row
       v-else
       dense
@@ -114,6 +115,35 @@
       </v-col>
     </v-row>
 
+    <!-- Indicador de carga para infinite scroll -->
+    <div
+      v-if="isLoading"
+      class="loading-indicator"
+    >
+      <v-progress-circular
+        indeterminate
+        color="primary"
+        size="32"
+      />
+      <span class="ml-2">Cargando más fotos...</span>
+    </div>
+
+    <!-- Indicador de fin de fotos -->
+    <div
+      v-else-if="!hasMoreFiltered && filteredPhotos.length > 0"
+      class="end-indicator"
+    >
+      <v-icon
+        size="24"
+        color="grey-lighten-1"
+      >
+        mdi-check-circle
+      </v-icon>
+      <span class="ml-2 text-caption">
+        {{ showOnlyChallenges ? 'No hay más fotos de retos' : 'No hay más fotos' }}
+      </span>
+    </div>
+
     <!-- Modal de detalle con navegación -->
     <PhotoDetailModal
       v-model="showDetailModal"
@@ -124,10 +154,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import PhotoDetailModal from './PhotoDetailModal.vue'
 
-defineProps({
+const props = defineProps({
   photos: {
     type: Array,
     default: () => []
@@ -143,16 +173,53 @@ defineProps({
   toggleChallengeFilter: {
     type: Function,
     default: () => {}
+  },
+  isLoading: {
+    type: Boolean,
+    default: false
+  },
+  hasMoreFiltered: {
+    type: Boolean,
+    default: true
+  },
+  loadMorePhotos: {
+    type: Function,
+    default: () => {}
   }
 })
 
 const showDetailModal = ref(false)
 const selectedPhotoIndex = ref(0)
 
+// Variables para infinite scroll
+const scrollThreshold = 100 // Píxeles antes del final para cargar más
+
 function showPhotoDetail(index) {
   selectedPhotoIndex.value = index
   showDetailModal.value = true
 }
+
+// Función para detectar cuando el usuario está cerca del final
+function handleScroll() {
+  if (props.isLoading || !props.hasMoreFiltered) return
+  
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+  const windowHeight = window.innerHeight
+  const documentHeight = document.documentElement.scrollHeight
+  
+  if (scrollTop + windowHeight >= documentHeight - scrollThreshold) {
+    props.loadMorePhotos()
+  }
+}
+
+// Añadir y remover event listener de scroll
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
 </script>
 
 <style scoped lang="scss">
@@ -251,6 +318,27 @@ function showPhotoDetail(index) {
         margin-top: 8px;
       }
     }
+  }
+  
+  .loading-indicator,
+  .end-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    color: rgba(255, 255, 255, 0.7);
+    
+    span {
+      font-size: 0.875rem;
+    }
+  }
+  
+  .loading-indicator {
+    color: #1976D2;
+  }
+  
+  .end-indicator {
+    color: #9e9e9e;
   }
 }
 
