@@ -10,9 +10,21 @@ CREATE TABLE IF NOT EXISTS photos (
   file_type TEXT NOT NULL,
   public_url TEXT NOT NULL,
   comment TEXT,
+  phone TEXT,
   uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- 2. Añadir columna phone a tabla photos existente (si no existe)
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT FROM information_schema.columns WHERE table_name = 'photos' AND column_name = 'phone') THEN
+    ALTER TABLE photos ADD COLUMN phone TEXT;
+    RAISE NOTICE 'Columna phone añadida a la tabla photos';
+  ELSE
+    RAISE NOTICE 'La columna phone ya existe en la tabla photos';
+  END IF;
+END $$;
 
 -- 2. Crear índices para mejorar el rendimiento
 CREATE INDEX IF NOT EXISTS idx_photos_uploaded_at ON photos(uploaded_at DESC);
@@ -58,6 +70,7 @@ COMMENT ON COLUMN photos.file_size IS 'Tamaño del archivo en bytes';
 COMMENT ON COLUMN photos.file_type IS 'Tipo MIME del archivo';
 COMMENT ON COLUMN photos.public_url IS 'URL pública para acceder a la imagen';
 COMMENT ON COLUMN photos.comment IS 'Comentario opcional del usuario';
+COMMENT ON COLUMN photos.phone IS 'Número de teléfono opcional para contactar al usuario';
 COMMENT ON COLUMN photos.uploaded_at IS 'Fecha y hora de subida';
 COMMENT ON COLUMN photos.created_at IS 'Fecha y hora de creación del registro';
 

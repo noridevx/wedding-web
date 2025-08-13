@@ -15,6 +15,9 @@
         :filtered-photos="filteredPhotos"
         :show-only-challenges="showOnlyChallenges"
         :toggle-challenge-filter="toggleChallengeFilter"
+        :is-loading="isLoading"
+        :has-more-filtered="hasMoreFiltered"
+        :load-more-photos="loadMorePhotos"
       />
     </main>
     
@@ -39,7 +42,17 @@ import ChallengeButton from '@/components/ChallengeButton.vue'
 import { usePhotoGallery } from '@/composables/usePhotoGallery'
 import { useChallenges } from '@/composables/useChallenges'
 
-const { photos, filteredPhotos, isRefreshing, showOnlyChallenges, listPhotos, toggleChallengeFilter } = usePhotoGallery()
+const { 
+  photos, 
+  filteredPhotos, 
+  isRefreshing, 
+  isLoading,
+  hasMoreFiltered,
+  showOnlyChallenges, 
+  listPhotos, 
+  loadMorePhotos,
+  toggleChallengeFilter 
+} = usePhotoGallery()
 const { fetchChallenges } = useChallenges()
 
 const challengeButtonRef = ref(null)
@@ -48,12 +61,12 @@ const forcedChallenge = ref(null)
 
 function handleUploadSuccess() {
   // Refrescar la galería después de una subida exitosa
-  listPhotos()
+  listPhotos(true) // Resetear y cargar desde el principio
 }
 
 function handleRefreshPhotos() {
   // Refrescar la galería después de completar un reto
-  listPhotos()
+  listPhotos(true) // Resetear y cargar desde el principio
   // Obtener nuevo reto
   if (challengeButtonRef.value) {
     challengeButtonRef.value.updateChallenge()
@@ -81,7 +94,7 @@ function handleUploadError(errorMessage) {
 }
 
 onMounted(async () => {
-  listPhotos()
+  listPhotos(true) // Cargar primera página
   await fetchChallenges()
 })
 </script>

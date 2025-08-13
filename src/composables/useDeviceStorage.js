@@ -2,6 +2,7 @@ import { ref, onMounted, computed } from 'vue'
 
 const deviceId = ref(null)
 const reservedChallenge = ref(null)
+const devicePhone = ref(null)
 
 export function useDeviceStorage() {
   // Generar o recuperar ID del dispositivo
@@ -15,6 +16,37 @@ export function useDeviceStorage() {
     }
     deviceId.value = id
     return id
+  }
+
+  // Guardar teléfono del dispositivo
+  function saveDevicePhone(phone) {
+    if (phone) {
+      localStorage.setItem('wedding_device_phone', phone)
+      devicePhone.value = phone
+    } else {
+      localStorage.removeItem('wedding_device_phone')
+      devicePhone.value = null
+    }
+  }
+
+  // Recuperar teléfono del dispositivo
+  function getDevicePhone() {
+    if (devicePhone.value) return devicePhone.value
+    
+    const phone = localStorage.getItem('wedding_device_phone')
+    if (phone) {
+      devicePhone.value = phone
+      return phone
+    }
+    return null
+  }
+
+  // Validar formato de teléfono
+  function validatePhone(phone) {
+    if (!phone) return true // Es opcional
+    // Validar formato básico de teléfono español
+    const phoneRegex = /^(\+34|0034|34)?[6789]\d{8}$/
+    return phoneRegex.test(phone.replace(/\s/g, ''))
   }
 
   // Guardar reto reservado en localStorage
@@ -72,12 +104,17 @@ export function useDeviceStorage() {
   onMounted(() => {
     getDeviceId()
     getReservedChallenge()
+    getDevicePhone()
   })
 
   return {
     deviceId: computed(() => deviceId.value),
     reservedChallenge: computed(() => reservedChallenge.value),
+    devicePhone: computed(() => devicePhone.value),
     getDeviceId,
+    saveDevicePhone,
+    getDevicePhone,
+    validatePhone,
     saveReservedChallenge,
     getReservedChallenge,
     clearReservedChallenge,

@@ -15,6 +15,47 @@
       </v-icon>
       ¡Completa un reto!
     </v-btn>
+
+    <!-- Información del reto completado -->
+    <div
+      v-if="currentChallenge && currentChallenge.is_completed"
+      class="completed-challenge-info"
+    >
+      <v-alert
+        type="success"
+        variant="tonal"
+        class="mb-2"
+      >
+        <template #prepend>
+          <v-icon icon="mdi-check-circle" />
+        </template>
+        <div class="d-flex align-center justify-space-between">
+          <span>¡Reto completado!</span>
+          <v-chip
+            v-if="currentChallenge.phone"
+            color="info"
+            variant="outlined"
+            size="small"
+          >
+            <v-icon start size="small">
+              mdi-phone
+            </v-icon>
+            Teléfono registrado
+          </v-chip>
+          <v-chip
+            v-else
+            color="warning"
+            variant="outlined"
+            size="small"
+          >
+            <v-icon start size="small">
+              mdi-phone-off
+            </v-icon>
+            Sin teléfono
+          </v-chip>
+        </div>
+      </v-alert>
+    </div>
   </div>
 </template>
 
@@ -80,6 +121,10 @@ defineExpose({
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(255, 193, 7, 0.4);
   }
+}
+
+.completed-challenge-info {
+  margin-top: 8px;
 }
 
 // Responsive
