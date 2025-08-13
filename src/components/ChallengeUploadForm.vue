@@ -93,6 +93,7 @@
     <v-snackbar
       v-model="showSnackbar"
       :color="snackbarColor"
+      location="top"
       :timeout="3000"
     >
       {{ snackbarMessage }}

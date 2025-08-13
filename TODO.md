@@ -4,17 +4,19 @@
 
 ### 🔧 Funcionalidades por Implementar
 
-#### 1. Añadir teléfono para los retos
-- [ ] **Descripción**: Agregar campo de teléfono en la funcionalidad de retos
-- [ ] **Archivos a modificar**:
-  - `supabase-challenges-setup.sql` - Añadir columna `phone` a tabla `challenges`
-  - `src/composables/useChallenges.js` - Actualizar funciones para manejar teléfono
-  - `src/components/FabUploadButton.vue` - Añadir campo de teléfono en el modal
-  - `src/components/ChallengeButton.vue` - Mostrar teléfono del reto
-- [ ] **Consideraciones**:
-  - Validación de formato de teléfono
-  - Opcional u obligatorio según requerimientos
-  - Mostrar en la información del reto
+#### 1. ✅ Añadir teléfono para los retos
+- [x] **Descripción**: Agregar campo de teléfono en la funcionalidad de retos
+- [x] **Archivos modificados**:
+  - `supabase-setup.sql` - Añadida columna `phone` a tabla `photos`
+  - `src/composables/useDeviceStorage.js` - Funciones para manejar teléfono del dispositivo
+  - `src/components/FabUploadButton.vue` - Campo de teléfono en el modal de retos
+  - `src/components/ChallengeButton.vue` - Mostrar estado del teléfono del reto
+- [x] **Funcionalidades implementadas**:
+  - Campo de teléfono opcional en modal de retos
+  - Validación de formato de teléfono español
+  - Persistencia del teléfono en localStorage para futuros retos
+  - Guardado del teléfono junto a cada foto (no al reto)
+  - Indicador visual del estado del teléfono en retos completados
 
 #### 2. Crear más de 200 retos
 - [ ] **Descripción**: Generar una base de datos con más de 200 retos variados
@@ -36,7 +38,7 @@
 ### 🎯 Prioridades
 
 **Alta Prioridad:**
-1. Añadir teléfono para los retos
+1. ✅ Añadir teléfono para los retos
 2. Crear más de 200 retos
 
 **Media Prioridad:**
@@ -51,12 +53,10 @@
 
 ### 📝 Notas de Implementación
 
-#### Para el teléfono:
+#### Para el teléfono (COMPLETADO):
 ```sql
--- Ejemplo de modificación en supabase-challenges-setup.sql
-ALTER TABLE challenges ADD COLUMN phone TEXT;
--- O si se añade desde el inicio:
-phone TEXT,
+-- Columna añadida a la tabla photos
+ALTER TABLE photos ADD COLUMN phone TEXT;
 ```
 
 #### Para los retos masivos:
@@ -73,12 +73,13 @@ phone TEXT,
 - Filtrado de fotos por retos
 - Highlighting de fotos de retos
 - Sistema de localStorage para persistencia
+- **Campo de teléfono opcional para retos**
 
 **🔄 En Progreso:**
 - Ninguna tarea actualmente
 
 **⏳ Pendiente:**
-- Las tareas listadas arriba
+- Crear más de 200 retos
 
 ---
 

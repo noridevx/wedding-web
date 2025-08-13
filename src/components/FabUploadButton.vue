@@ -69,6 +69,21 @@
             ref="form"
             @submit.prevent="handleUpload"
           >
+            <!-- Campo de teléfono (solo para retos) -->
+            <v-text-field
+              v-if="currentChallenge"
+              v-model="phone"
+              label="Teléfono (para participar en el concurso)"
+              placeholder="600000000"
+              prepend-icon="mdi-phone"
+              variant="outlined"
+              hide-details="auto"
+              density="compact"
+              class="mb-4"
+              :error-messages="phoneError"
+              @input="validatePhone"
+            />
+
             <!-- Selector de archivo -->
             <v-file-input
               v-model="selectedFile"
@@ -126,7 +141,7 @@
           :color="currentChallenge ? 'warning' : 'primary'"
           variant="tonal"
           :loading="isUploading"
-          :disabled="!selectedFile || isUploading"
+          :disabled="!selectedFile || isUploading || !!phoneError"
           @click="handleUpload"
         >
           <template #prepend>
@@ -145,6 +160,7 @@
   <v-snackbar
     v-model="showSnackbar"
     :color="snackbarColor"
+    location="top"
     :timeout="3000"
   >
     {{ snackbarMessage }}
@@ -152,9 +168,10 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { supabase, SUPABASE_BUCKET, SUPABASE_FOLDER } from '@/lib/supabase'
 import { useChallenges } from '@/composables/useChallenges'
+import { useDeviceStorage } from '@/composables/useDeviceStorage'
 
 const emit = defineEmits(['upload-success', 'upload-error', 'refresh-photos', 'modal-opened'])
 
@@ -174,17 +191,30 @@ const props = defineProps({
 const showModal = ref(false)
 const selectedFile = ref(null)
 const comment = ref('')
+const phone = ref('')
 const isUploading = ref(false)
 const showSnackbar = ref(false)
 const snackbarMessage = ref('')
 const snackbarColor = ref('success')
 const fileError = ref('')
+const phoneError = ref('')
 
-// Lógica de retos
+// Lógica de retos y almacenamiento
 const { completeChallenge } = useChallenges()
+const { getDevicePhone, saveDevicePhone, validatePhone: validatePhoneFormat } = useDeviceStorage()
 
 // Computed para el reto actual
 const currentChallenge = computed(() => props.forceChallenge || props.challenge)
+
+// Watcher para cargar el teléfono cuando cambie el reto
+watch(currentChallenge, (newChallenge) => {
+  if (newChallenge && showModal.value) {
+    const savedPhone = getDevicePhone()
+    if (savedPhone) {
+      phone.value = savedPhone
+    }
+  }
+})
 
 
 
@@ -204,6 +234,11 @@ const imagePreview = computed(() => {
 
 function openModal() {
   showModal.value = true
+  // Cargar teléfono guardado si existe
+  const savedPhone = getDevicePhone()
+  if (savedPhone) {
+    phone.value = savedPhone
+  }
   // Emitir evento para indicar que se abrió con reto
   emit('modal-opened', 'challenge')
 }
@@ -211,6 +246,8 @@ function openModal() {
 function openModalNormal() {
   // Limpiar cualquier reto forzado y abrir modal normal
   showModal.value = true
+  // Limpiar el teléfono cuando se abre modal normal
+  phone.value = ''
   // Emitir evento para limpiar el reto forzado
   emit('modal-opened', 'normal')
 }
@@ -238,16 +275,28 @@ function validateFile() {
   }
 }
 
-function formatFileSize(bytes) {
-  if (bytes === 0) return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+function validatePhone() {
+  phoneError.value = ''
+  if (!phone.value) return true // Es opcional
+  
+  if (!validatePhoneFormat(phone.value)) {
+    phoneError.value = 'Formato de teléfono inválido. Usa un número español válido.'
+    return false
+  }
+  // Limpiar error si el teléfono es válido
+  phoneError.value = ''
+  return true
 }
+
+
 
 async function handleUpload() {
   if (!selectedFile.value || !supabase) return
+
+  // Validar teléfono si se proporciona
+  if (phone.value && !validatePhone()) {
+    return
+  }
 
   isUploading.value = true
   try {
@@ -286,6 +335,7 @@ async function handleUpload() {
           file_type: selectedFile.value.type,
           public_url: urlData.publicUrl,
           comment: comment.value,
+          phone: phone.value || null,
           challenge_id: currentChallenge.value?.id || null,
           uploaded_at: new Date().toISOString()
         }
@@ -312,10 +362,15 @@ async function handleUpload() {
       }
     }
 
+    // Guardar teléfono en localStorage para futuros retos
+    if (phone.value) {
+      saveDevicePhone(phone.value)
+    }
+
     console.log('Upload success:', photoData)
     
     // Mostrar notificación de éxito
-    const message = currentChallenge.value ? '¡Reto completado exitosamente!' : 'Foto subida exitosamente'
+    const message = currentChallenge.value ? '¡Reto completado!' : 'Foto subida'
     showNotification(message, 'success')
     
     // Emitir eventos
@@ -346,7 +401,10 @@ function closeModal() {
   showModal.value = false
   selectedFile.value = null
   comment.value = ''
+  // No limpiar el teléfono para que persista entre retos
+  // phone.value = ''
   fileError.value = ''
+  phoneError.value = ''
 }
 </script>
 
