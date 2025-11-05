@@ -33,21 +33,36 @@ CREATE INDEX IF NOT EXISTS idx_photos_file_type ON photos(file_type);
 -- 3. Habilitar Row Level Security (RLS)
 ALTER TABLE photos ENABLE ROW LEVEL SECURITY;
 
--- 4. Crear políticas para permitir operaciones públicas
+-- 4. Eliminar políticas existentes si las hay (para evitar conflictos)
+DROP POLICY IF EXISTS "Allow public read access" ON photos;
+DROP POLICY IF EXISTS "Allow public insert" ON photos;
+DROP POLICY IF EXISTS "Allow public update comments" ON photos;
+DROP POLICY IF EXISTS "Allow public update" ON photos;
+DROP POLICY IF EXISTS "Allow public delete" ON photos;
+
+-- 5. Crear políticas para permitir operaciones públicas
 -- Política para permitir lectura pública de todas las fotos
 CREATE POLICY "Allow public read access" ON photos
-  FOR SELECT USING (true);
+  FOR SELECT
+  USING (true);
 
 -- Política para permitir inserción pública (subida de fotos)
 CREATE POLICY "Allow public insert" ON photos
-  FOR INSERT WITH CHECK (true);
-
--- Política para permitir actualización de comentarios (opcional)
-CREATE POLICY "Allow public update comments" ON photos
-  FOR UPDATE USING (true)
+  FOR INSERT
   WITH CHECK (true);
 
--- 5. Crear función para actualizar el timestamp de created_at
+-- Política para permitir actualización pública (comentarios, teléfono, etc.)
+CREATE POLICY "Allow public update" ON photos
+  FOR UPDATE
+  USING (true)
+  WITH CHECK (true);
+
+-- Política para permitir eliminación pública (opcional, para limpieza)
+CREATE POLICY "Allow public delete" ON photos
+  FOR DELETE
+  USING (true);
+
+-- 6. Crear función para actualizar el timestamp de created_at
 CREATE OR REPLACE FUNCTION update_created_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -56,13 +71,13 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
--- 6. Crear trigger para actualizar created_at automáticamente
+-- 7. Crear trigger para actualizar created_at automáticamente
 CREATE TRIGGER update_photos_created_at 
   BEFORE UPDATE ON photos 
   FOR EACH ROW 
   EXECUTE FUNCTION update_created_at_column();
 
--- 7. Comentarios sobre la tabla
+-- 8. Comentarios sobre la tabla
 COMMENT ON TABLE photos IS 'Tabla para almacenar información de fotos subidas por usuarios';
 COMMENT ON COLUMN photos.file_path IS 'Ruta del archivo en Supabase Storage';
 COMMENT ON COLUMN photos.file_name IS 'Nombre original del archivo';
@@ -74,7 +89,7 @@ COMMENT ON COLUMN photos.phone IS 'Número de teléfono opcional para contactar 
 COMMENT ON COLUMN photos.uploaded_at IS 'Fecha y hora de subida';
 COMMENT ON COLUMN photos.created_at IS 'Fecha y hora de creación del registro';
 
--- 8. Verificar que la tabla se creó correctamente
+-- 9. Verificar que la tabla se creó correctamente
 SELECT 
   table_name,
   column_name,
