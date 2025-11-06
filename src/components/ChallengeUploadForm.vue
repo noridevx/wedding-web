@@ -128,8 +128,8 @@ const { completeChallenge } = useChallenges()
 const fileRules = [
   value => {
     if (!value) return 'Selecciona una imagen para completar el reto'
-    if (!value.type.startsWith('image/')) return 'El archivo debe ser una imagen'
-    if (value.size > 10 * 1024 * 1024) return 'El archivo no puede ser mayor a 10MB'
+    if (!value?.type?.startsWith('image/')) return 'El archivo debe ser una imagen'
+    if (value?.size > 10 * 1024 * 1024) return 'El archivo no puede ser mayor a 10MB'
     return true
   }
 ]
