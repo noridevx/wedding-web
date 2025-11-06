@@ -221,7 +221,6 @@ watch(currentChallenge, (newChallenge) => {
 const fileRules = [
   value => {
     if (!value) return 'Selecciona una imagen'
-    if (!value?.size || value?.size > 50 * 1024 * 1024) return 'El archivo no puede ser mayor a 50MB'
     return true
   }
 ]
